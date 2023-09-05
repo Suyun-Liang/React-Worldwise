@@ -54,7 +54,7 @@ function Map() {
       <MapContainer
         className={styles.map}
         center={mapPosition}
-        zoom={7}
+        zoom={6}
         scrollWheelZoom={true}
       >
         <TileLayer
@@ -74,7 +74,7 @@ function Map() {
         ))}
 
         <ChangeCenter position={mapPosition} />
-        <DetackClick />
+        <DetectClick />
       </MapContainer>
     </div>
   );
@@ -88,7 +88,7 @@ function ChangeCenter({ position }) {
 }
 
 // leaflet library: get position on event
-function DetackClick() {
+function DetectClick() {
   const navigate = useNavigate();
   useMapEvent({
     click: (e) => navigate(`form?lat=${e.latlng.lat}&lng=${e.latlng.lng}`),

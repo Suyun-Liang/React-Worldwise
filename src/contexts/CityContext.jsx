@@ -1,24 +1,61 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useEffect, useContext, useReducer } from "react";
 
 const CityContext = createContext();
 const BASE_URL = "http://localhost:8000";
+const initializeState = {
+  cities: [],
+  isLoading: false,
+  currentCity: {},
+  error: "",
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "loading":
+      return { ...state, isLoading: true };
+    case "cities/loaded":
+      return { ...state, isLoading: false, cities: action.payload };
+    case "city/loaded":
+      return { ...state, isLoading: false, currentCity: action.payload };
+    case "city/added":
+      return {
+        ...state,
+        isLoading: false,
+        cities: [...state.cities, action.payload],
+        currentCity: action.payload,
+      };
+    case "city/deleted":
+      return {
+        ...state,
+        isLoading: false,
+        cities: state.cities.filter((city) => city.id !== action.payload),
+        currentCity: initializeState.currentCity,
+      };
+    case "rejected":
+      return { ...state, isLoading: false, error: action.payload };
+    default:
+      throw new Error("Unknown action type");
+  }
+}
 
 function CityProvider({ children }) {
-  const [cities, setCities] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentCity, setCurentCity] = useState({});
+  const [{ cities, isLoading, currentCity, error }, dispatch] = useReducer(
+    reducer,
+    initializeState
+  );
 
   useEffect(function () {
     async function fetchCities() {
+      dispatch({ type: "loading" });
       try {
-        setIsLoading(true);
         const cityRes = await fetch(`${BASE_URL}/cities`);
         const cityData = await cityRes.json();
-        setCities(cityData);
-      } catch (error) {
-        alert("There was an error");
-      } finally {
-        setIsLoading(false);
+        dispatch({ type: "cities/loaded", payload: cityData });
+      } catch {
+        dispatch({
+          type: "rejected",
+          payload: "There was an error fetching cities",
+        });
       }
     }
 
@@ -26,21 +63,23 @@ function CityProvider({ children }) {
   }, []);
 
   async function getCity(id) {
+    if (Number(id) === currentCity.id) return;
+    dispatch({ type: "loading" });
     try {
-      setIsLoading(true);
       const cityRes = await fetch(`${BASE_URL}/cities/${id}`);
       const cityData = await cityRes.json();
-      setCurentCity(cityData);
-    } catch (error) {
-      alert("There was an error");
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: "city/loaded", payload: cityData });
+    } catch {
+      dispatch({
+        type: "rejected",
+        payload: "There was an error getting a city",
+      });
     }
   }
 
   async function addCity(newCity) {
+    dispatch({ type: "loading" });
     try {
-      setIsLoading(true);
       const cityRes = await fetch(`${BASE_URL}/cities/`, {
         method: "POST",
         body: JSON.stringify(newCity),
@@ -49,25 +88,27 @@ function CityProvider({ children }) {
         },
       });
       const cityData = await cityRes.json();
-      setCities((preCity) => [...preCity, cityData]);
-    } catch (error) {
-      alert("There was an error");
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: "city/added", payload: cityData });
+    } catch {
+      dispatch({
+        type: "rejected",
+        payload: "There was an error adding a city",
+      });
     }
   }
 
   async function deleteCity(selectedId) {
+    dispatch({ type: "loading" });
     try {
-      setIsLoading(true);
       await fetch(`${BASE_URL}/cities/${selectedId}`, {
         method: "DELETE",
       });
-      setCities((preCity) => preCity.filter((e) => e.id !== selectedId));
-    } catch (error) {
-      alert("There was an error");
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: "city/deleted", payload: selectedId });
+    } catch {
+      dispatch({
+        type: "rejected",
+        payload: "There was an error deleting city",
+      });
     }
   }
 
@@ -77,6 +118,7 @@ function CityProvider({ children }) {
         cities,
         isLoading,
         currentCity,
+        error,
         getCity,
         addCity,
         deleteCity,
