@@ -37,28 +37,28 @@
       "id": 98443197
     },
     {
-      "cityName": "Faro",
-      "country": "Portugal",
-      "emoji": "🇵🇹",
-      "date": "2027-10-31T15:59:59.138Z",
-      "notes": "My favorite city so far!",
-      "position": {
-        "lat": 38.727881642324164,
-        "lng": -9.140900099907554
-      },
-      "id": 73932385
-    },
-    {
-      "cityName": "Barcelona",
-      "country": "Spain",
-      "emoji": "🇪🇸",
-      "date": "2027-07-15T08:22:53.976Z",
+      "cityName": "Kyiv",
+      "country": "Ukraine",
+      "emoji": "🇺🇦",
+      "date": "2023-09-04T16:53:27.492Z",
       "notes": "",
       "position": {
-        "lat": 40.46635901755316,
-        "lng": -3.7133789062500004
+        "lat": "50.28933925329178",
+        "lng": "30.563964843750004"
       },
-      "id": 17446751
+      "id": 98443200
+    },
+    {
+      "cityName": "Changsha",
+      "country": "China",
+      "emoji": "🇨🇳",
+      "date": "2023-09-04T16:58:35.038Z",
+      "notes": "wanna go home~~~",
+      "position": {
+        "lat": "28.13012773787403",
+        "lng": "112.92846679687501"
+      },
+      "id": 98443201
     }
   ]
 }
